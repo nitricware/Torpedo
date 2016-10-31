@@ -121,8 +121,8 @@ function tick(){
     console.log("Tick begins...")
 
     for (var i = 0; i < torpedoes.length; i++) {
-        var newX = torpedoes[i][1]+torpedoes[i][3]*torpedoespeed
-        var newY = torpedoes[i][2]+torpedoes[i][4]*torpedoespeed
+        var newX = torpedoes[i][1]+torpedoes[i][3]*torpedoSpeed
+        var newY = torpedoes[i][2]+torpedoes[i][4]*torpedoSpeed
         if (newX < screenBorder) newX = screenBorder
         if (newY < screenBorder) newY = screenBorder
         placeTorpedo(torpedoes[i], newX, newY)
