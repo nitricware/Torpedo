@@ -30,6 +30,7 @@ var torpedoSpeed = 0.7      // Torpedo speed
 var submarineSpeed = 0.2    // Boat speed
 var screenBorder = 15       // Compare with body margin in css
 var maxTorpedoHits = 2      // How many hits before torpedo is terminated
+var creditsPerHit = 100     // Credits given for sinking a boat
 
 /**
  * Game Logic
@@ -137,8 +138,9 @@ function checkTorpedo(torpedo, torpedoNumber){
                 //submarines[i][0].parentNode.removeChild(submarines[i][0])
                 //submarines.splice(i, 1)
                 terminateSubmarine(i)
-                torpedo[5]++
-                if (torpedo[5] > maxTorpedoHits){
+                torpedoes[torpedoNumber][5]++
+                updateScore(creditsPerHit*torpedoes[torpedoNumber][5])
+                if (torpedoes[torpedoNumber][5] > maxTorpedoHits){
                     terminateTorpedo(torpedoNumber)
                 }
         }
@@ -194,6 +196,12 @@ function fireTorpedo(){
     return true
 }
 
+function updateScore(credits){
+    score += credits
+    document.getElementById("score").innerHTML = score
+    return true
+}
+
 /**
  * Does a tick.
  * @return {bool} true
@@ -229,5 +237,7 @@ submarines = []
 torpedoes = []
 
 spawnCount = 0
+
+score = 0
 
 setInterval(tick, tickTimeInMS)
