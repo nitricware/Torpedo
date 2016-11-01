@@ -1,27 +1,54 @@
-var maxFieldSizeX = 150
-var maxFieldSizeY = 100
-var maxSubmarines = 5
-var tickTimeInMS = 1000
-var initTorpedoPosX = 15
-var initTorpedoPosY = 15
-var initSubmarinePosX = 40
-var initSubmarinePosY = 30
-var torpedoSpeed = 0.7
-var submarineSpeed = 0.2
-var screenBorder = 15
-var maxTorpedoHits = 2
+/**
+ *   _______                        _
+ *  |__   __|                      | |
+ *     | | ___  _ __ _ __   ___  __| | ___
+ *     | |/ _ \| '__| '_ \ / _ \/ _` |/ _ \
+ *     | | (_) | |  | |_) |  __/ (_| | (_) |
+ *     |_|\___/|_|  | .__/ \___|\__,_|\___/
+ *                  | |
+ *                  |_|
+ *
+ * Torpedo v. 1.1
+ * 1. November 2016
+ * NitricWare - nitricware.com
+ * MIT License
+ */
 
-// Game logic
+/**
+ * Settings
+ */
 
-submarines = []
-torpedoes = []
+var maxFieldSizeX = 150     // Specify game field width, also change css
+var maxFieldSizeY = 100     // Specify game field heigth, also change css
+var maxSubmarines = 5       // Specify number of simultaneous active boats
+var tickTimeInMS = 1000     // Specify tick length
+var initTorpedoPosX = 15    // Compare with body margin in css
+var initTorpedoPosY = 15    // Compare with body margin in css
+var initSubmarinePosX = 40  // Closest X position of boat at spawn
+var initSubmarinePosY = 30  // Closest Y position of boat at spawn
+var torpedoSpeed = 0.7      // Torpedo speed
+var submarineSpeed = 0.2    // Boat speed
+var screenBorder = 15       // Compare with body margin in css
+var maxTorpedoHits = 2      // How many hits before torpedo is terminated
 
-spawnCount = 0
+/**
+ * Game Logic
+ */
 
+/**
+ * returns a random integer in range of min and max
+ * @param  {int} min min number
+ * @param  {int} max max number
+ * @return {int}     random int
+ */
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+/**
+ * Creates a submarine div.
+ * @return {array} Contains the div, and initial x and y
+ */
 function createNewSubmarine(){
     var submarineDummy = document.getElementById("submarineDummy");
     var newSubmarine = submarineDummy.cloneNode(true);
@@ -31,6 +58,13 @@ function createNewSubmarine(){
     return [newSubmarine,0,0];
 }
 
+/**
+ * Places submarine div at x and y.
+ * @param  {array} submarine the submarine array
+ * @param  {int} x           new x position
+ * @param  {int} y           new y position
+ * @return {bool}            true
+ */
 function placeSubmarine(submarine,x,y){
     submarine[0].style.left = x+"px"
     submarine[0].style.top = y+"px"
@@ -39,6 +73,13 @@ function placeSubmarine(submarine,x,y){
     return true
 }
 
+/**
+ * Places torpedo div at x and y.
+ * @param  {array} torpedo the torpedo array
+ * @param  {int} x         new x position
+ * @param  {int} y         new y position
+ * @return {bool}          true
+ */
 function placeTorpedo(torpedo,x,y){
     torpedo[0].style.left = x+"px"
     torpedo[0].style.top = y+"px"
@@ -48,6 +89,11 @@ function placeTorpedo(torpedo,x,y){
     return true
 }
 
+/**
+ * Creates a torpedo div and sets its direction.
+ * @param  {int} deg   direction in degrees
+ * @return {array}     the new torpedo array
+ */
 function createNewTorpedo(deg){
     var torpedoDummy = document.getElementById("torpedoDummy");
     var newTorpedo = torpedoDummy.cloneNode(true);
@@ -58,6 +104,10 @@ function createNewTorpedo(deg){
     //div,x,y,vx,vy,hitCounter
 }
 
+/**
+ * Creates submarines until maxSubmarines is reached
+ * @return {bool} true
+ */
 function initialSubmarines(){
     console.log("Creating Submarines...")
     while (submarines.length < maxSubmarines) {
@@ -71,6 +121,12 @@ function initialSubmarines(){
     return true;
 }
 
+/**
+ * Collision detection.
+ * @param  {array} torpedo       the torpedo array
+ * @param  {int} torpedoNumber   index of torpedo inside torpedoes
+ * @return {bool}                true
+ */
 function checkTorpedo(torpedo, torpedoNumber){
     for (var i = 0; i < submarines.length; i++) {
         if ((torpedo[1] >= submarines[i][1] || torpedo[1]+5 >= submarines[i][1]) &&
@@ -90,16 +146,33 @@ function checkTorpedo(torpedo, torpedoNumber){
     return true
 }
 
+/**
+ * Deletes the torpedo div and splices it from torpedoes.
+ * @param  {int} torpedoNumber  index inside torpedoes
+ * @return {bool}               true
+ */
 function terminateTorpedo(torpedoNumber){
     torpedoes[torpedoNumber][0].parentNode.removeChild(torpedoes[torpedoNumber][0])
     torpedoes.splice(torpedoNumber, 1)
+    return true
 }
 
+/**
+ * Deletes the boat div and splices it from submarines.
+ * @param  {int} submarineNumber index inside
+ * @return {bool}                true
+ */
 function terminateSubmarine(submarineNumber){
     submarines[submarineNumber][0].parentNode.removeChild(submarines[submarineNumber][0])
     submarines.splice(submarineNumber, 1)
+    return true
 }
 
+/**
+ * Converts degrees to a directional vector.
+ * @param  {int} deg degrees
+ * @return {array}   vector
+ */
 function convertDegToVector(deg){
     var rad = deg * Math.PI / 180;
     var vectorX = Math.floor(Math.cos(rad)*10)
@@ -109,6 +182,10 @@ function convertDegToVector(deg){
     return [vectorX,vectorY]
 }
 
+/**
+ * Creates a new torpedo and sets its degrees by reading from an input field.
+ * @return {bool} true
+ */
 function fireTorpedo(){
     var deg = document.getElementById("torpedoDegValue").value
     console.log("Firing torpedo at "+deg+" degrees...")
@@ -117,6 +194,10 @@ function fireTorpedo(){
     return true
 }
 
+/**
+ * Does a tick.
+ * @return {bool} true
+ */
 function tick(){
     console.log("Tick begins...")
 
@@ -144,6 +225,9 @@ function tick(){
     return true;
 }
 
-initialSubmarines()
+submarines = []
+torpedoes = []
+
+spawnCount = 0
 
 setInterval(tick, tickTimeInMS)
